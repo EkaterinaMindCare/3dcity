@@ -3,17 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой 3D Город Будущего (Версия 2.0)</title>
+    <title>3D Город (Базовая Версия)</title>
     <style>
-        /* Стиль для чистого холста */
         body { margin: 0; overflow: hidden; background-color: #000011; }
     </style>
 </head>
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
     
-    <script src="https://unpkg.com/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
-
     <script>
         // --- Настройка Сцены ---
         const scene = new THREE.Scene();
@@ -24,15 +21,7 @@
         renderer.setSize( window.innerWidth, window.innerHeight );
         document.body.appendChild( renderer.domElement );
 
-        // --- Управление Камерой ---
-        // После загрузки библиотеки OrbitControls (выше), мы можем ее использовать.
-        const controls = new THREE.OrbitControls( camera, renderer.domElement );
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.minDistance = 5;
-        controls.maxDistance = 50;
-
-        // --- Освещение и Город ---
+        // --- Освещение ---
         const ambientLight = new THREE.AmbientLight( 0x444466, 2 );
         scene.add( ambientLight );
 
@@ -42,8 +31,8 @@
             light.position.set( x, y, z );
             scene.add( light );
         }
-        createCityLight(0xff00ff, 15, 10, 15);
-        createCityLight(0x00ffff, -15, 10, -15);
+        createCityLight(0xff00ff, 15, 10, 15); // Фиолетовый
+        createCityLight(0x00ffff, -15, 10, -15); // Голубой
         
         // Плоскость
         const planeGeometry = new THREE.PlaneGeometry( 100, 100 );
@@ -81,12 +70,11 @@
 
         // Начальная позиция Камеры
         camera.position.set( 10, 8, 15 );
-        controls.update();
 
         // Цикл Анимации
         function animate() {
             requestAnimationFrame( animate );
-            controls.update();
+            // Вращение не используется, т.к. нет OrbitControls
             renderer.render( scene, camera );
         }
 
