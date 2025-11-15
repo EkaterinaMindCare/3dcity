@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой 3D Город Будущего</title>
+    <title>Мой 3D Город Будущего (Версия 2.0)</title>
     <style>
         /* Стиль для чистого холста */
         body { margin: 0; overflow: hidden; background-color: #000011; }
@@ -11,12 +11,12 @@
 </head>
 <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+    
+    <script src="https://unpkg.com/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
 
     <script>
         // --- Настройка Сцены ---
         const scene = new THREE.Scene();
-        // Темно-синий/черный фон для ночного города
         scene.background = new THREE.Color( 0x010115 ); 
         
         const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -25,50 +25,45 @@
         document.body.appendChild( renderer.domElement );
 
         // --- Управление Камерой ---
-        // Позволяет вращать, приближать и отдалять город мышью
+        // После загрузки библиотеки OrbitControls (выше), мы можем ее использовать.
         const controls = new THREE.OrbitControls( camera, renderer.domElement );
-        controls.enableDamping = true; // Плавное движение
+        controls.enableDamping = true;
         controls.dampingFactor = 0.05;
         controls.minDistance = 5;
         controls.maxDistance = 50;
 
-        // --- Освещение ---
-        // Мягкий рассеянный свет
+        // --- Освещение и Город ---
         const ambientLight = new THREE.AmbientLight( 0x444466, 2 );
         scene.add( ambientLight );
 
-        // Футуристические точечные источники света (как огни на зданиях)
+        // Футуристические огни
         function createCityLight(color, x, y, z) {
             const light = new THREE.PointLight( color, 10, 100 );
             light.position.set( x, y, z );
             scene.add( light );
         }
+        createCityLight(0xff00ff, 15, 10, 15);
+        createCityLight(0x00ffff, -15, 10, -15);
         
-        createCityLight(0xff00ff, 15, 10, 15); // Фиолетовый
-        createCityLight(0x00ffff, -15, 10, -15); // Голубой
-        
-        // --- Создание Плоскости (Земли/Основы Города) ---
+        // Плоскость
         const planeGeometry = new THREE.PlaneGeometry( 100, 100 );
         const planeMaterial = new THREE.MeshStandardMaterial( { color: 0x050510, metalness: 0.8, roughness: 0.1 } );
         const plane = new THREE.Mesh( planeGeometry, planeMaterial );
-        plane.rotation.x = -Math.PI / 2; // Поворачиваем, чтобы плоскость лежала горизонтально
+        plane.rotation.x = -Math.PI / 2;
         scene.add( plane );
 
 
-        // --- Создание Зданий (Процедурная Генерация) ---
-        
+        // Генерация Зданий
         const geometry = new THREE.BoxGeometry( 1, 1, 1 );
         
         for (let i = 0; i < 150; i++) {
-            // Случайные размеры здания
-            const h = Math.random() * 8 + 2; // Высота от 2 до 10
-            const w = Math.random() * 2 + 0.5; // Ширина от 0.5 до 2
-            const d = Math.random() * 2 + 0.5; // Глубина от 0.5 до 2
+            const h = Math.random() * 8 + 2;
+            const w = Math.random() * 2 + 0.5;
+            const d = Math.random() * 2 + 0.5;
 
-            // Футуристические материалы
             const material = new THREE.MeshStandardMaterial({
-                color: 0x111133, // Основной темный цвет
-                emissive: new THREE.Color(Math.random() > 0.8 ? 0x00ffaa : 0x000000), // Неоновое свечение
+                color: 0x111133,
+                emissive: new THREE.Color(Math.random() > 0.8 ? 0x00ffaa : 0x000000),
                 emissiveIntensity: Math.random() * 0.5 + 0.2,
                 metalness: 0.5,
                 roughness: 0.5,
@@ -76,30 +71,26 @@
             });
 
             const building = new THREE.Mesh( geometry, material );
-            
             building.scale.set(w, h, d);
-            
-            // Случайное размещение в пределах города (квадрат 40x40)
             building.position.x = (Math.random() - 0.5) * 40;
             building.position.z = (Math.random() - 0.5) * 40;
-            building.position.y = h / 2; // Устанавливаем половину высоты, чтобы стояло на земле
+            building.position.y = h / 2;
 
             scene.add( building );
         }
 
-        // --- Начальная позиция Камеры ---
+        // Начальная позиция Камеры
         camera.position.set( 10, 8, 15 );
-        controls.update(); // Обновление контроля камеры
+        controls.update();
 
-        // --- Цикл Анимации (Рендер) ---
+        // Цикл Анимации
         function animate() {
             requestAnimationFrame( animate );
-
-            controls.update(); // Обновление управления камерой
+            controls.update();
             renderer.render( scene, camera );
         }
 
-        // --- Обработка Изменения Размера Окна ---
+        // Обработка Изменения Размера Окна
         window.addEventListener( 'resize', onWindowResize, false );
 
         function onWindowResize(){
